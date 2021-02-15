@@ -69,8 +69,11 @@ func (hook *RedisHook) Fire(entry *logrus.Entry) error {
 	case V2:
 		msg = hook.Config.Meta.EncodeV2(entry)
 	case AccessLog:
-
+		msg = hook.Config.Meta.EncodeAccessLog(entry)
 	case Custom:
+		if hook.Config.Formatter == nil {
+			return errors.New("must specify a formatter function")
+		}
 		msg = hook.Config.Formatter(entry, &hook.Config.Meta)
 	default:
 		return errors.New("Invalid message formatter")
