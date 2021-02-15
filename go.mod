@@ -1,4 +1,4 @@
-module logrus-redis
+module github.com/vixalie/logrus-redis
 
 go 1.15
 
