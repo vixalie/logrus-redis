@@ -1,6 +1,7 @@
 package logredis
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -26,6 +27,7 @@ type HookConfig struct {
 
 // RedisHook to sends logs to Redis server
 type RedisHook struct {
+	context        context.Context
 	ConnectionPool *redis.Client
 	Config         *HookConfig
 }
@@ -38,6 +40,7 @@ func NewHook(config HookConfig) *RedisHook {
 		DB:       config.Redis.DB,
 	})
 	return &RedisHook{
+		context:        context.Background(),
 		ConnectionPool: rdsConnection,
 		Config:         &config,
 	}
@@ -78,7 +81,7 @@ func (hook *RedisHook) Fire(entry *logrus.Entry) error {
 		return fmt.Errorf("failed to create message for REDIS: %s", err)
 	}
 
-	execution := hook.ConnectionPool.Publish(entry.Context, hook.Config.Meta.Channel, string(msgInJSON))
+	execution := hook.ConnectionPool.Publish(hook.context, hook.Config.Meta.Channel, string(msgInJSON))
 	if err := execution.Err(); err != nil {
 		return fmt.Errorf("Publish message failed, %v", err)
 	}
