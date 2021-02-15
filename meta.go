@@ -60,3 +60,21 @@ func (l LogMetaConfig) EncodeV2(entry *logrus.Entry) map[string]interface{} {
 
 	return msg
 }
+
+// EncodeAccessLog is used to assemble the message that storages meta information in @field and without time field.
+func (l LogMetaConfig) EncodeAccessLog(entry *logrus.Entry) map[string]interface{} {
+	msg := make(map[string]interface{})
+
+	msg["message"] = entry.Message
+	msg["@source_host"] = l.Hostname
+
+	fields := make(map[string]interface{})
+	fields["application"] = l.Application
+
+	for k, v := range entry.Data {
+		fields[k] = v
+	}
+	msg["@fields"] = fields
+
+	return msg
+}
