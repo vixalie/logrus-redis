@@ -83,8 +83,17 @@ func (hook *RedisHook) Fire(entry *logrus.Entry) error {
 	if err != nil {
 		return fmt.Errorf("failed to create message for REDIS: %s", err)
 	}
+	content := string(msgInJSON)
+	if hook.Config.Meta.TrailingNewLine {
+		content += "\n"
+	}
 
-	execution := hook.ConnectionPool.Publish(hook.context, hook.Config.Meta.Channel, string(msgInJSON))
+	var execution *redis.IntCmd
+	if hook.Config.Meta.ListMode {
+		execution = hook.ConnectionPool.RPush(hook.context, hook.Config.Meta.Channel, content)
+	} else {
+		execution = hook.ConnectionPool.Publish(hook.context, hook.Config.Meta.Channel, content)
+	}
 	if err := execution.Err(); err != nil {
 		return fmt.Errorf("Publish message failed, %v", err)
 	}

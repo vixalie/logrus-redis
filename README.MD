@@ -1,8 +1,8 @@
 # Redis Hook for logrus
 
-This library provides a logrus hook base on Redis PUB/SUB function. Useful for centralized logging, espaecially for RELK Stack (Redis, Elasticsearch, Logstash, Kibana). 
+This library provides a logrus hook base on both Redis PUB/SUB function and LIST. Useful for centralized logging, espaecially for RELK Stack (Redis, Elasticsearch, Logstash, Kibana). 
 
-When this hook instance was added to logrus, all log message will be sent to redis by PUBLISH command in JSON string form.
+When this hook instance was added to logrus, all log message will be sent to redis by PUBLISH command in JSON string form, and by RPUSH command in list mode.
 
 ## Install
 
@@ -28,11 +28,13 @@ The another is for construct log message sent to Redis service. We call it log m
 
 ```go
 hookMetaConfig := logredis.LogMetaConfig{
-    Channel:       "log_topic",
-    Application:   "test_app",
-    Hostname:      "library.archknight.xyz",
-    MessageFormat: logredis.V1, // Use logredis.Custom when you need custom formatter.
-    Source:        "test_demo",
+    Channel:         "log_topic",
+    Application:     "test_app",
+    Hostname:        "library.archknight.xyz",
+    TrailingNewLine: false, // set true to add a trailing new line character '\n'.
+    ListMode:        false, // set true to use RPUSH command instead of PUBLISH.
+    MessageFormat:   logredis.V1, // Use logredis.Custom when you need custom formatter.
+    Source:          "test_demo",
 }
 ```
 

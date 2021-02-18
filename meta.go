@@ -8,13 +8,15 @@ import (
 
 // LogMetaConfig stores Log message meta info
 type LogMetaConfig struct {
-	Channel       string
-	Application   string
-	Hostname      string
-	Origin        string
-	Source        string
-	Extras        map[string]interface{}
-	MessageFormat int
+	Channel         string
+	Application     string
+	Hostname        string
+	Origin          string
+	Source          string
+	Extras          map[string]interface{}
+	TrailingNewLine bool
+	ListMode        bool
+	MessageFormat   int
 }
 
 // Message Formats
